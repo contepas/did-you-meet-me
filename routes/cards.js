@@ -11,11 +11,18 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     try {
-        const side = req.query.side || "question";
+        let side = req.query.side;
+        if (side !== "answare") {
+            side = "question";
+        }
+        const name = req.cookies.username;
+        if (!name){
+            res.redirect('/');
+        }
         const {id} = req.params;
         const text = cards[id][side];
         const {hint} = cards[id];
-        let templateData = {id, text};
+        let templateData = {id, text, name};
 
         if (side === "answare"){
             templateData = {backSide: "question", ...templateData};
