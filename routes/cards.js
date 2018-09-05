@@ -17,7 +17,7 @@ router.get('/:id', (req, res) => {
         }
         const name = req.cookies.username;
         if (!name){
-            res.redirect('/');
+            return res.redirect('/');
         }
         const {id} = req.params;
         const text = cards[id][side];
