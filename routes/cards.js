@@ -13,11 +13,8 @@ router.get('/:id', (req, res) => {
 
     if (side === "question"){
         templateData = {backSide: "answare", ...templateData, ...side, ...hint};
-        //const backSide = "answare"
-        //templateData = {side, backSide, text, hint, id};
     } else if(side === "answare"){
-        const backSide = "question";
-        templateData = {side, backSide, text, id};
+        templateData = {backSide: "question", ...templateData, ...side};
     } else {
         const err = new Error("No card side was request")
         err.status = 500;
