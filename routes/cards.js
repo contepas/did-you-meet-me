@@ -3,28 +3,30 @@ const router = express.Router();
 const {data} = require('../data/flashcardData.json');
 const {cards} = data;
 
+router.get('/', (req, res) => {
+    const numberOfCards = cards.length;
+    const cardID = Math.floor(Math.random() * numberOfCards);
+    res.redirect(`/cards/${cardID}?side=question`);
+})
 
 router.get('/:id', (req, res) => {
-    const {side} = req.query;
-    const {id} = req.params;
-    const text = cards[id][side];
-    const {hint} = cards[id];
-    let templateData = {id, text};
+    try {
+        const side = req.query.side || "question";
+        const {id} = req.params;
+        const text = cards[id][side];
+        const {hint} = cards[id];
+        let templateData = {id, text};
 
-    if (side === "question"){
-        templateData = {backSide: "answare", ...templateData, ...side, ...hint};
-    } else if(side === "answare"){
-        templateData = {backSide: "question", ...templateData, ...side};
-    } else {
-        const err = new Error("No card side was request")
-        err.status = 500;
-        res.locals.error = err;
-        res.render('error');
-    }
-    try{
+        if (side === "answare"){
+            templateData = {backSide: "question", ...templateData};
+        } else {
+            templateData = {backSide: "answare", ...templateData, ...hint};
+        }
+
         res.render('card', templateData);
-    }catch(err){
-        err.message = `There are no cards with id: ${req.params.id}`
+    } catch(err){
+        err.message = `There are no cards with id: ${req.params.id}`;
+        err.status = 404;
         res.locals.error = err;
         res.render('error');
     }
