@@ -5,17 +5,29 @@ const {cards} = data;
 
 
 router.get('/:id', (req, res) => {
-    //res.locals.prompt = "What is my favorite game?";
-    cardNum = req.params.id;
+    const {side} = req.query;
+    const {id} = req.params;
+    const text = cards[id][side];
+    const {hint} = cards[id];
+    let templateData = {id, text};
+
+    if (side === "question"){
+        templateData = {backSide: "answare", ...templateData, ...side, ...hint};
+        //const backSide = "answare"
+        //templateData = {side, backSide, text, hint, id};
+    } else if(side === "answare"){
+        const backSide = "question";
+        templateData = {side, backSide, text, id};
+    } else {
+        const err = new Error("No card side was request")
+        err.status = 500;
+        res.locals.error = err;
+        res.render('error');
+    }
     try{
-    //if(cardNum >= 0 || cardNum < cards.length){
-        res.render('card', {
-            prompt: cards[cardNum].question,
-            hint: cards[cardNum].hint 
-            //hint: "The best team-based multiplayer first-person shooter, developed and published by Blizzard Entertainment"
-        });
+        res.render('card', templateData);
     }catch(err){
-        err.message = "There are no cards anymore!"
+        err.message = `There are no cards with id: ${req.params.id}`
         res.locals.error = err;
         res.render('error');
     }

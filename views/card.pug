@@ -2,10 +2,10 @@ extends layout.pug
 
 block content      
     section#content
-        h2= prompt
+        h2= text
         if hint
             p
                 i Hint: #{hint}
-        else
-            p There is no hint for this card... maybe because it is too easy!
+        a(href=`/cards/${id}?side=${backSide}`)= backSide
+
             
